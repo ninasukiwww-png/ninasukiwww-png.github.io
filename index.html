@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnowBlock · 我的小站</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e9f5ff 0%, #ffffff 100%);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+
+        .card {
+            max-width: 780px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(2px);
+            border-radius: 3rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(156, 200, 255, 0.3);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .header {
+            background: #0b2b3b;
+            padding: 2rem 2rem 1.5rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #FFE6B0, #C0F0FF);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .header .domain {
+            color: #7fbcce;
+            margin-top: 0.5rem;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 2.2rem 2rem;
+        }
+
+        .greeting {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #0f3b4a;
+            border-left: 5px solid #2aa5c1;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .intro {
+            color: #1f5063;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+
+        .links {
+            background: #f1f9fe;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            margin: 1.8rem 0;
+        }
+
+        .links p {
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: #0b4b5e;
+        }
+
+        .link-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .link-list a {
+            background: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #1f7b8c;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: 0.2s;
+            border: 1px solid #cbe4ed;
+        }
+
+        .link-list a:hover {
+            background: #dff3fc;
+            color: #0a4b5e;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            border-top: 1px solid #cde1ea;
+            padding: 1.2rem 2rem;
+            background: #fafeff;
+            font-size: 0.85rem;
+            color: #508aa0;
+            text-align: center;
+        }
+
+        @media (max-width: 550px) {
+            .header h1 { font-size: 2.2rem; }
+            .greeting { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="header">
+        <h1>❄️ SnowBlock</h1>
+        <div class="domain">snowblock.top · 刚刚启程</div>
+    </div>
+    <div class="content">
+        <div class="greeting">
+            👋 你好，我是你的 GitHub Pages 小站
+        </div>
+        <div class="intro">
+            这个页面跑在 GitHub Pages 上，域名 <strong>snowblock.top</strong> 通过阿里云解析过来。<br>
+            你可以任意修改这个 HTML，或者换成 React / Vue 等静态站点。
+        </div>
+
+        <div class="links">
+            <p>🧪 试试下面的路径（GitHub Pages 自动映射）：</p>
+            <div class="link-list">
+                <a href="/about/">📄 /about/</a>
+                <a href="/notes/">✍️ /notes/</a>
+                <a href="/project/weather/">☀️ /project/weather/</a>
+                <a href="/随便写的路径/">🎲 /随便写的路径/</a>
+            </div>
+            <p style="margin-top: 1rem; font-size:0.85rem;">👇 只要在仓库里创建对应的文件夹 + index.html ，就能通过 /xxx/ 访问。</p>
+        </div>
+
+        <div style="background: #e2f0f5; border-radius: 1.2rem; padding: 1rem; margin-top: 0.5rem;">
+            💡 提示：当前页面就是根目录下的 <code style="background:#fff; padding:0.2rem 0.4rem; border-radius: 10px;">index.html</code>。<br>
+            试试点击上面链接，现在可能会 404 —— 因为你还没创建那些文件夹。看完下面的教程，你就会做了。
+        </div>
+    </div>
+    <div class="footer">
+        🚀 由 GitHub Pages + 自定义域名驱动 · 无需备案
+    </div>
+</div>
+</body>
+</html>
