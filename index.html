@@ -14,10 +14,9 @@
     <meta property="og:type" content="website">
     <meta property="og:locale" content="zh_CN">
 
-    <!-- Favicon (emoji SVG) -->
+    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❄️</text></svg>">
 
-    <!-- 预连接：Google Analytics -->
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
 
     <style>
@@ -27,7 +26,7 @@
             box-sizing: border-box;
         }
 
-        /* ========== 背景图片 & 毛玻璃容器 ========== */
+        /* ========== 背景图 + 暗色叠加层 ========== */
         body {
             min-height: 100vh;
             display: flex;
@@ -38,42 +37,53 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
 
-            /* ▼ 背景图：放置根目录下 0.png */
+            /* 背景图：根目录下 138936740_p0.png */
             background: #0b2b3b url('138936740_p0.png') center / cover no-repeat fixed;
         }
 
-        /* 当背景图加载失败时的回退 */
-        body:has(> :not(img)) {
-            background-color: #0f3b4a;
+        /* 半透明暗色遮罩 — 让背景图更清晰、文字更易读 */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.30);
+            pointer-events: none;
+            z-index: 0;
         }
 
-        /* ========== 毛玻璃卡片 ========== */
+        /* 让所有内容在遮罩之上 */
+        body > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== 毛玻璃卡片 — 更透 ========== */
         .card {
             max-width: 800px;
             width: 100%;
 
-            /* ▸ 玻璃拟态核心 */
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(16px) saturate(1.4);
-            -webkit-backdrop-filter: blur(16px) saturate(1.4);
+            /* ▼ 降低不透明度，让背景透更多 */
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px) saturate(1.2);
+            -webkit-backdrop-filter: blur(12px) saturate(1.2);
             border-radius: 3rem;
-            border: 1px solid rgba(255, 255, 255, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.20);
             box-shadow:
-                0 30px 60px -16px rgba(0, 0, 0, 0.40),
-                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+                0 30px 60px -16px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
 
             overflow: hidden;
             transition: backdrop-filter 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* 深色头部 — 半透明以透出背景 */
+        /* 头部 — 半透明深色 */
         .header {
-            background: rgba(11, 43, 59, 0.72);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(11, 43, 59, 0.55);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             padding: 2rem 2rem 1.5rem;
             text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .header h1 {
@@ -87,7 +97,7 @@
         }
 
         .header .domain {
-            color: rgba(127, 188, 206, 0.92);
+            color: rgba(180, 220, 235, 0.92);
             margin-top: 0.5rem;
             font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
             font-size: 1rem;
@@ -103,13 +113,13 @@
             font-size: 1.5rem;
             font-weight: 600;
             color: #ffffff;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.30);
-            border-left: 4px solid #7fd1e8;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+            border-left: 4px solid #8fd8ef;
             padding-left: 1rem;
             margin-bottom: 1.5rem;
         }
 
-        /* ========== 服务列表 — 半透明毛玻璃项 ========== */
+        /* ========== 服务列表 ========== */
         .service-list {
             display: flex;
             flex-direction: column;
@@ -123,14 +133,14 @@
             flex-wrap: wrap;
             gap: 0.4rem 0.5rem;
 
-            /* ▸ 毛玻璃项 */
-            background: rgba(255, 255, 255, 0.20);
-            backdrop-filter: blur(10px) saturate(1.3);
-            -webkit-backdrop-filter: blur(10px) saturate(1.3);
+            /* ▼ 更透的毛玻璃项 */
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(8px) saturate(1.2);
+            -webkit-backdrop-filter: blur(8px) saturate(1.2);
             border-radius: 1.5rem;
             padding: 1rem 1.2rem;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            box-shadow: 0 4px 16px -6px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 16px -6px rgba(0, 0, 0, 0.15);
 
             text-decoration: none;
             color: inherit;
@@ -142,35 +152,32 @@
                 box-shadow 0.25s ease,
                 backdrop-filter 0.25s ease;
 
-            cursor: default; /* 默认, 可点击的单独加 cursor */
+            cursor: default;
         }
 
-        /* 可点击的服务项 */
         .service-item[href] {
             cursor: pointer;
         }
-        /* 可复制的服务项 */
         .service-item[data-copy] {
             cursor: copy;
         }
 
         .service-item:hover {
-            background: rgba(255, 255, 255, 0.35);
-            backdrop-filter: blur(14px) saturate(1.5);
-            -webkit-backdrop-filter: blur(14px) saturate(1.5);
+            background: rgba(255, 255, 255, 0.22);
+            backdrop-filter: blur(12px) saturate(1.4);
+            -webkit-backdrop-filter: blur(12px) saturate(1.4);
             transform: translateX(4px) scale(1.01);
-            box-shadow: 0 8px 28px -10px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 8px 28px -10px rgba(0, 0, 0, 0.30);
         }
 
         .service-item:focus-visible {
-            outline: 2px solid #7fd1e8;
+            outline: 2px solid #8fd8ef;
             outline-offset: 3px;
         }
 
-        /* 复制成功闪烁 */
         .service-item.copied {
-            background: rgba(100, 220, 180, 0.35) !important;
-            border-color: rgba(100, 220, 180, 0.6) !important;
+            background: rgba(100, 220, 180, 0.25) !important;
+            border-color: rgba(100, 220, 180, 0.45) !important;
             transform: scale(1.02);
             transition: all 0.12s ease;
         }
@@ -179,31 +186,31 @@
             font-size: 1.2rem;
             font-weight: 600;
             color: #ffffff;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
             flex-shrink: 0;
             min-width: 120px;
         }
 
         .service-url {
-            color: #d4f0ff;
+            color: #ddf4ff;
             font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
             word-break: break-all;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
         }
 
         .service-desc {
             font-size: 0.75rem;
-            color: rgba(200, 230, 245, 0.85);
+            color: rgba(200, 235, 250, 0.80);
             white-space: nowrap;
         }
 
-        /* ========== Toast 提示 ========== */
+        /* ========== Toast ========== */
         .toast {
             position: fixed;
             bottom: 2rem;
             left: 50%;
             transform: translateX(-50%) translateY(20px);
-            background: rgba(0, 0, 0, 0.72);
+            background: rgba(0, 0, 0, 0.65);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             color: #fff;
@@ -211,8 +218,8 @@
             border-radius: 2rem;
             font-size: 0.95rem;
             font-weight: 500;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.30);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.30s ease, transform 0.30s ease;
@@ -228,17 +235,17 @@
             margin: 1.5rem 0 0.5rem;
             border-radius: 1.5rem;
             overflow: hidden;
-            box-shadow: 0 4px 20px -8px rgba(0, 0, 0, 0.20);
+            box-shadow: 0 4px 20px -8px rgba(0, 0, 0, 0.25);
         }
 
         /* ========== 页脚 ========== */
         .footer-note {
             font-size: 0.8rem;
-            color: rgba(200, 230, 245, 0.75);
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.20);
+            color: rgba(200, 235, 250, 0.70);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.30);
             text-align: center;
             margin-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding-top: 1rem;
         }
 
@@ -246,7 +253,6 @@
                    跨屏幕尺寸优化
                    ============================================== */
 
-        /* 小平板 / 大手机 */
         @media (max-width: 700px) {
             body {
                 padding: 1rem;
@@ -285,7 +291,6 @@
             }
         }
 
-        /* 小手机 (< 400px) */
         @media (max-width: 400px) {
             body {
                 padding: 0.5rem;
@@ -343,7 +348,6 @@
             }
         }
 
-        /* 大屏 (≥ 1200px) 舒适间距 */
         @media (min-width: 1200px) {
             body {
                 padding: 3rem;
@@ -370,7 +374,6 @@
             }
         }
 
-        /* 减少动画（无障碍） */
         @media (prefers-reduced-motion: reduce) {
             *,
             *::before,
@@ -392,7 +395,6 @@
 </head>
 <body>
 
-    <!-- Toast 提示容器 -->
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <main class="card">
@@ -408,7 +410,6 @@
 
             <nav class="service-list" aria-label="服务导航">
 
-                <!-- ① 博客 — 正常跳转 -->
                 <a href="https://blog.snowblock.top"
                    class="service-item"
                    target="_blank" rel="noopener noreferrer">
@@ -416,7 +417,7 @@
                     <span class="service-url">blog.snowblock.top</span>
                 </a>
 
-                <!-- ② MC 服务器 — 点击复制（play 开头） -->
+                <!-- MC 服务器 — 点击复制 -->
                 <span class="service-item"
                       data-copy="play.snowblock.top"
                       tabindex="0"
@@ -427,7 +428,6 @@
                     <span class="service-desc">点击复制</span>
                 </span>
 
-                <!-- ③ MC 状态监控 — 正常跳转 -->
                 <a href="https://status.snowblock.top"
                    class="service-item"
                    target="_blank" rel="noopener noreferrer">
@@ -435,7 +435,6 @@
                     <span class="service-url">status.snowblock.top</span>
                 </a>
 
-                <!-- ④ 服务器性能监控 — 正常跳转 -->
                 <a href="https://monitor.snowblock.top"
                    class="service-item"
                    target="_blank" rel="noopener noreferrer">
@@ -445,7 +444,6 @@
 
             </nav>
 
-            <!-- 音乐控件 -->
             <div class="music-player">
                 <iframe
                     style="border-radius:12px"
@@ -470,10 +468,9 @@
         (function() {
             'use strict';
 
-            const toast = document.getElementById('toast');
-            let toastTimer = null;
+            var toast = document.getElementById('toast');
+            var toastTimer = null;
 
-            /** 显示 Toast 提示 */
             function showToast(msg, duration) {
                 duration = duration || 2000;
                 toast.textContent = msg;
@@ -484,9 +481,7 @@
                 }, duration);
             }
 
-            /** 复制文本到剪贴板 */
             function copyText(text) {
-                // 优先使用 Clipboard API
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(text).then(function() {
                         showToast('✅ 已复制: ' + text);
@@ -498,7 +493,6 @@
                 }
             }
 
-            /** 兼容旧浏览器的复制方式 */
             function fallbackCopy(text) {
                 var ta = document.createElement('textarea');
                 ta.value = text;
@@ -521,7 +515,6 @@
                 document.body.removeChild(ta);
             }
 
-            // ---- 绑定所有 data-copy 元素 ----
             var copyEls = document.querySelectorAll('[data-copy]');
             Array.prototype.forEach.call(copyEls, function(el) {
                 el.addEventListener('click', function(e) {
@@ -529,7 +522,6 @@
                     var text = el.getAttribute('data-copy');
                     if (text) {
                         copyText(text);
-                        // 闪烁反馈
                         el.classList.add('copied');
                         setTimeout(function() {
                             el.classList.remove('copied');
@@ -537,7 +529,6 @@
                     }
                 });
 
-                // 键盘支持 (回车/空格)
                 el.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
