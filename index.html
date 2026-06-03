@@ -43,7 +43,8 @@
             --font-mono: 'SF Mono','Cascadia Code','Fira Code','Consolas',monospace;
             --font-sans: 'Segoe UI',Roboto,'Helvetica Neue',system-ui,-apple-system,sans-serif;
             --font-title: 'ZCOOL KuaiLe', cursive, var(--font-sans);
-            --body-pad: 2.5rem;
+            /* 比例化 body-pad：gap/卡片宽度 ≈ 6.67%（1:15），与桌面一致 */
+            --body-pad: clamp(1.2rem, 5.88vw, 2.5rem);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -299,7 +300,6 @@
             min-height: 1.5em;
         }
 
-        /* 打字光标 */
         .status-motto::after {
             content: '▍';
             display: inline;
@@ -332,8 +332,13 @@
             animation: fadeSlide 0.5s ease 1s forwards;
         }
 
+        /* ==========================================
+               响应式 — 手机端与电脑端比例一致
+               body-pad 由 clamp 自动缩放，不用再改
+               只调整内边距和圆角等视觉细节
+               ========================================== */
         @media (max-width: 760px) {
-            .card { max-width: 420px; border-radius: 2.2rem; }
+            .card { border-radius: 2.2rem; }
             .header { padding: 1.4rem 1.4rem 1.1rem; }
             .content { padding: 1.2rem 1.4rem; }
             .service-item { padding: 0.65rem 0.9rem; border-radius: 1.2rem; }
@@ -342,7 +347,7 @@
         }
 
         @media (max-width: 520px) {
-            .card { max-width: 340px; border-radius: 1.8rem; }
+            .card { border-radius: 1.8rem; }
             .header { padding: 1.1rem 1.1rem 0.9rem; }
             .header h1 { font-size: 1.3rem; }
             .header .domain { font-size: 0.65rem; }
@@ -505,7 +510,6 @@
             if (p.x < -10) p.x = w + 10;
         }
 
-        // 保持粒子数量
         while (particles.length < MAX_PARTICLES) {
             particles.push(createParticle());
         }
@@ -660,7 +664,6 @@
         }
     }
 
-    // 初始延迟，等入场动画结束后开始打字
     setTimeout(typeMotto, 1200);
 
     // ===== 运行时间 =====
