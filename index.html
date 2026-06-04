@@ -43,7 +43,6 @@
             --font-mono: 'SF Mono','Cascadia Code','Fira Code','Consolas',monospace;
             --font-sans: 'Segoe UI',Roboto,'Helvetica Neue',system-ui,-apple-system,sans-serif;
             --font-title: 'ZCOOL KuaiLe', cursive, var(--font-sans);
-            /* 比例化 body-pad：gap/卡片宽度 ≈ 6.67%（1:15），与桌面一致 */
             --body-pad: clamp(1.2rem, 5.88vw, 2.5rem);
         }
 
@@ -57,7 +56,7 @@
             padding: var(--body-pad);
             font-family: var(--font-sans);
             -webkit-font-smoothing: antialiased;
-            background: var(--color-bg-deep) url('138936740_p0.webp') center / cover no-repeat fixed;
+            background: var(--color-bg-deep) url('138936740_p0.png') center / cover no-repeat fixed;
             overflow-x: hidden;
         }
 
@@ -326,22 +325,9 @@
             text-shadow: 0 1px 4px rgba(0,0,0,0.30);
             text-align: center;
             margin-top: 1rem;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            padding-top: 0.8rem;
-            opacity: 0;
-            animation: fadeSlide 0.5s ease 1s forwards;
-        }
-
-        /* ==========================================
-               响应式 — 手机端与电脑端比例一致
-               body-pad 由 clamp 自动缩放，不用再改
-               只调整内边距和圆角等视觉细节
-               ========================================== */
-        @media (max-width: 760px) {
-            .card { border-radius: 2.2rem; }
-            .header { padding: 1.4rem 1.4rem 1.1rem; }
-            .content { padding: 1.2rem 1.4rem; }
-            .service-item { padding: 0.65rem 0.9rem; border-radius: 1.2rem; }
+            border-top: 1px solid rgba( padding:                {
+: 2.2rem; }
+   padding: 0.65rem 0.9rem; border-radius: 1.2rem; }
             .service-name { min-width: 75px; }
             .status-box { padding: 0.8rem 1rem; }
         }
@@ -492,28 +478,21 @@
 
     function drawSnow() {
         ctx.clearRect(0, 0, w, h);
-
         for (var i = 0; i < particles.length; i++) {
             var p = particles[i];
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             ctx.fillStyle = 'rgba(255, 255, 255, ' + p.alpha + ')';
             ctx.fill();
-
             p.y += p.speed;
             p.x += p.wind;
-
-            if (p.y > h + 10) {
-                particles[i] = createParticle();
-            }
+            if (p.y > h + 10) { particles[i] = createParticle(); }
             if (p.x > w + 10) p.x = -10;
             if (p.x < -10) p.x = w + 10;
         }
-
         while (particles.length < MAX_PARTICLES) {
             particles.push(createParticle());
         }
-
         requestAnimationFrame(drawSnow);
     }
     drawSnow();
@@ -607,64 +586,103 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // ===== 打字机效果的状态语 =====
+    // ===== 一言 API + 打字机效果 =====
     var mottoEl = document.getElementById('statusMotto');
-    var mottos = [
+    var mottoText = '';
+    var mottoFrom = '';
+    var charIndex = 0;
+    var isDeleting = false;
+    var typeSpeed = 60;
+    var deleteSpeed = 25;
+    var pauseTime = 6000;
+    var isBusy = false;
+
+    var fallbacks = [
         '❄️ 今天也在雪地里码代码',
         '🎮 服务器开着，来玩吗',
         '☕ 咖啡因浓度：高',
         '🌙 夜猫子出没中',
         '🏔️ 雪山服务器运行中',
-        '🐧 正在 ping 我的良心...',
-        '🛠️ 修 bug 中，请稍候',
-        '🎵 脑内循环播放中',
-        '📝 写博客的冲动来了',
         '✨ 保持好奇，保持愚蠢',
         '⚡ 系统状态：摸鱼',
         '🍵 先喝口水再干活',
         '🌨️ 雪下了一整天',
-        '🧊 冷静，只是服务器而已',
         '🔄 正在重启智商...',
-        '🎯 目标是：不咕',
-        '📡 信号良好，心情一般',
-        '🕒 距离周末还有 ' + ['5 天','4 天','3 天','2 天','1 天','0 天 🎉','0 天 🎉'][new Date().getDay()]
+        '🎯 目标是：不咕'
     ];
 
-    var mottoIndex = Math.floor(Math.random() * mottos.length);
-    var charIndex = 0;
-    var isDeleting = false;
-    var typeSpeed = 60;
-    var deleteSpeed = 25;
-    var pauseTime = 5000;
+    function fetchHitokoto() {
+        if (isBusy) return;
+        isBusy = true;
 
-    function typeMotto() {
-        var current = mottos[mottoIndex];
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://v1.hitokoto.cn', true);
+        xhr.timeout = 4000;
+
+        xhr.onload = function() {
+            isBusy = false;
+            if (xhr.status === 200) {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    if (data && data.hitokoto) {
+                        mottoText = data.hitokoto;
+                        mottoFrom = data.from ? ' ——' + data.from : '';
+                        startTyping();
+                        return;
+                    }
+                } catch(e) { /* fallback */ }
+            }
+            useFallback();
+        };
+
+        xhr.onerror = function() { isBusy = false; useFallback(); };
+        xhr.ontimeout = function() { isBusy = false; useFallback(); };
+        xhr.send();
+    }
+
+    function useFallback() {
+        mottoText = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+        mottoFrom = '';
+        startTyping();
+    }
+
+    function startTyping() {
+        charIndex = 0;
+        isDeleting = false;
+        mottoEl.textContent = '';
+        typeStep();
+    }
+
+    function typeStep() {
+        var display = mottoText + mottoFrom;
+        var len = display.length;
 
         if (!isDeleting) {
             charIndex++;
-            mottoEl.textContent = current.substring(0, charIndex);
-
-            if (charIndex === current.length) {
+            mottoEl.textContent = display.substring(0, charIndex);
+            if (charIndex >= len) {
                 isDeleting = true;
-                setTimeout(typeMotto, pauseTime);
+                setTimeout(typeStep, pauseTime);
                 return;
             }
-            setTimeout(typeMotto, typeSpeed);
+            setTimeout(typeStep, typeSpeed);
         } else {
             charIndex--;
-            mottoEl.textContent = current.substring(0, charIndex);
-
-            if (charIndex === 0) {
-                isDeleting = false;
-                mottoIndex = (mottoIndex + 1) % mottos.length;
-                setTimeout(typeMotto, 300);
+            mottoEl.textContent = display.substring(0, charIndex);
+            if (charIndex <= 0) {
+                mottoText = '';
+                mottoFrom = '';
+                setTimeout(function() {
+                    fetchHitokoto();
+                }, 400);
                 return;
             }
-            setTimeout(typeMotto, deleteSpeed);
+            setTimeout(typeStep, deleteSpeed);
         }
     }
 
-    setTimeout(typeMotto, 1200);
+    // 等入场动画完成后再开始
+    setTimeout(fetchHitokoto, 1500);
 
     // ===== 运行时间 =====
     var uptimeEl = document.getElementById('uptime');
