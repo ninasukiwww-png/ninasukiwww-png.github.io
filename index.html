@@ -21,6 +21,8 @@
     <meta name="twitter:title" content="SnowBlock · 个人导航">
     <meta name="twitter:description" content="❄️ SnowBlock 个人导航 — 博客、MC 服务器、状态监控、主机监控一站式">
     <meta name="twitter:image" content="https://snowblock.top/138936740_p0.webp">
+    <!-- 缓存策略：建议浏览器缓存页面 1 天 -->
+    <meta http-equiv="Cache-Control" content="max-age=86400">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❄️</text></svg>">
     <link rel="preload" href="https://snowblock.top/138936740_p0.webp" as="image">
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
@@ -57,7 +59,10 @@
             padding: var(--body-pad);
             font-family: var(--font-sans);
             -webkit-font-smoothing: antialiased;
-            background: var(--color-bg-deep) url('https://snowblock.top/138936740_p0.webp') center / cover no-repeat fixed;
+            /* 浅蓝色降级背景（图片未加载时显示） */
+            background:
+                linear-gradient(160deg, #cce7f5, #b3daf2, #9fccee),
+                url('https://snowblock.top/138936740_p0.webp') center / cover no-repeat fixed;
             overflow-x: hidden;
         }
 
@@ -65,7 +70,7 @@
             content: '';
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.30);
+            background: rgba(255,255,255,0.18);  /* 半透明白色遮罩，维持浅亮质感 */
             pointer-events: none;
             z-index: 0;
         }
@@ -81,6 +86,47 @@
             z-index: 0;
         }
 
+        /* ---------- Loading 层 ---------- */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: rgba(180,210,235,0.95); /* 浅蓝半透明 */
+            backdrop-filter: blur(6px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .loader-icon {
+            font-size: 3.5rem;
+            animation: float 2.5s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        .loader-text {
+            margin-top: 1.2rem;
+            font-family: var(--font-title);
+            color: #1e3b4a;
+            font-size: 1.4rem;
+            letter-spacing: 0.08em;
+        }
+
+        /* 卡片加载状态：先隐藏动画 */
+        .card.loading {
+            opacity: 0;
+            animation: none !important;
+        }
+
+        /* ---------- 卡片主体 ---------- */
         .card {
             width: 100%;
             max-width: 600px;
@@ -93,12 +139,12 @@
             overflow: hidden;
             opacity: 0;
             transform: translateY(24px);
-            animation: cardEnter 0.8s ease forwards;
+            transition: opacity 0.8s ease, transform 0.8s ease;
         }
 
-        @keyframes cardEnter {
-            0%   { opacity: 0; transform: translateY(24px); }
-            100% { opacity: 1; transform: translateY(0); }
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .header {
@@ -326,6 +372,24 @@
             animation: fadeSlide 0.5s ease 1s forwards;
         }
 
+        /* ---------- 16:9 竖屏适配 ---------- */
+        @media (orientation: portrait) and (max-width: 900px) {
+            body {
+                background:
+                    linear-gradient(160deg, #cce7f5, #b3daf2, #9fccee),
+                    url('https://snowblock.top/138936740_p0.webp') top center / auto 100% no-repeat;
+                background-attachment: local;
+            }
+            .card {
+                max-width: 92vw;
+                border-radius: 2.2rem;
+            }
+            .header h1 {
+                font-size: clamp(1.5rem, 6vw, 2.4rem);
+            }
+        }
+
+        /* 原有响应式 */
         @media (max-width: 760px) {
             .card { border-radius: 2.2rem; }
             .header { padding: 1.4rem 1.4rem 1.1rem; }
@@ -371,13 +435,15 @@
             .status-box { background: #f5f5f5; border-color: #ddd; opacity: 1; animation: none; }
             .clock { color: #222; text-shadow: none; }
             .status-motto { color: #555; }
-            .status-motto::after { display: none; }
+            .status-motto::after { content: none; }
             .uptime { color: #888; }
             .footer-note { opacity: 1; animation: none; }
             #snowCanvas { display: none; }
+            #loader { display: none; }
         }
     </style>
 
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-94E19J45J8"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -388,11 +454,17 @@
 </head>
 <body>
 
-<canvas id="snowCanvas"></canvas>
+<!-- 加载层 -->
+<div id="loader">
+    <div class="loader-icon">❄️</div>
+    <div class="loader-text">正在连接雪境…</div>
+</div>
+
+<canvas id="snowCanvas" aria-hidden="true"></canvas>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<main class="card">
+<main class="card loading" id="mainCard">
     <header class="header">
         <h1>❄️ SnowBlock</h1>
         <p class="domain">snowblock.top · 导航</p>
@@ -444,10 +516,52 @@
 (function() {
     'use strict';
 
-    var canvas = document.getElementById('snowCanvas');
-    var ctx = canvas.getContext('2d');
-    var particles = [];
-    var w, h;
+    /* ========== 加载逻辑 ========== */
+    const loader = document.getElementById('loader');
+    const card = document.getElementById('mainCard');
+    const bgImage = 'https://snowblock.top/138936740_p0.webp';
+    let loaded = false;
+    let minTimePassed = false;
+
+    const img = new Image();
+    img.src = bgImage;
+    img.onload = () => { loaded = true; checkShowCard(); };
+    img.onerror = () => { loaded = true; checkShowCard(); };
+
+    // 至少显示 1.5 秒
+    setTimeout(() => {
+        minTimePassed = true;
+        checkShowCard();
+    }, 1500);
+
+    // 超时 5 秒强制显示
+    const timeout = setTimeout(() => {
+        if (!card.classList.contains('visible')) {
+            loaded = true;
+            minTimePassed = true;
+            checkShowCard();
+        }
+    }, 5000);
+
+    function checkShowCard() {
+        if (loaded && minTimePassed && !card.classList.contains('visible')) {
+            clearTimeout(timeout);
+            loader.classList.add('hidden');
+            card.classList.remove('loading');
+            setTimeout(() => card.classList.add('visible'), 20);
+            loader.addEventListener('transitionend', () => {
+                if (loader.classList.contains('hidden')) {
+                    loader.style.display = 'none';
+                }
+            }, { once: true });
+        }
+    }
+
+    /* ========== 雪花 ========== */
+    const canvas = document.getElementById('snowCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let w, h;
 
     function resizeCanvas() {
         w = canvas.width = window.innerWidth;
@@ -456,7 +570,7 @@
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    var MAX_PARTICLES = 60;
+    const MAX_PARTICLES = window.innerWidth < 768 ? 30 : 60;
 
     function createParticle() {
         return {
@@ -470,8 +584,8 @@
     }
 
     function initSnow() {
-        for (var i = 0; i < 40; i++) {
-            var p = createParticle();
+        for (let i = 0; i < MAX_PARTICLES; i++) {
+            let p = createParticle();
             p.y = Math.random() * h;
             particles.push(p);
         }
@@ -480,15 +594,15 @@
 
     function drawSnow() {
         ctx.clearRect(0, 0, w, h);
-        for (var i = 0; i < particles.length; i++) {
-            var p = particles[i];
+        for (let i = 0; i < particles.length; i++) {
+            let p = particles[i];
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             ctx.fillStyle = 'rgba(255, 255, 255, ' + p.alpha + ')';
             ctx.fill();
             p.y += p.speed;
             p.x += p.wind;
-            if (p.y > h + 10) { particles[i] = createParticle(); }
+            if (p.y > h + 10) particles[i] = createParticle();
             if (p.x > w + 10) p.x = -10;
             if (p.x < -10) p.x = w + 10;
         }
@@ -499,24 +613,22 @@
     }
     drawSnow();
 
-    var toast = document.getElementById('toast');
-    var toastTimer = null;
+    /* ========== Toast & 复制 ========== */
+    const toast = document.getElementById('toast');
+    let toastTimer = null;
 
-    function showToast(msg, dur) {
-        dur = dur || 2000;
+    function showToast(msg, dur = 2000) {
         toast.textContent = msg;
         toast.classList.add('show');
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(function() {
-            toast.classList.remove('show');
-        }, dur);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), dur);
     }
 
     function copyText(text) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(function() {
+            navigator.clipboard.writeText(text).then(() => {
                 showToast('✅ 已复制：' + text);
-            }).catch(function() {
+            }).catch(() => {
                 fallbackCopy(text);
             });
         } else {
@@ -525,7 +637,7 @@
     }
 
     function fallbackCopy(text) {
-        var ta = document.createElement('textarea');
+        const ta = document.createElement('textarea');
         ta.value = text;
         ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0';
         document.body.appendChild(ta);
@@ -539,14 +651,14 @@
         document.body.removeChild(ta);
     }
 
-    document.querySelectorAll('[data-copy]').forEach(function(el) {
+    document.querySelectorAll('[data-copy]').forEach(el => {
         el.addEventListener('click', function(e) {
             e.stopPropagation();
-            var t = el.getAttribute('data-copy');
+            const t = el.getAttribute('data-copy');
             if (t) {
                 copyText(t);
                 el.classList.add('copied');
-                setTimeout(function() { el.classList.remove('copied'); }, 300);
+                setTimeout(() => el.classList.remove('copied'), 300);
             }
         });
         el.addEventListener('keydown', function(e) {
@@ -557,10 +669,11 @@
         });
     });
 
-    var greetingEl = document.getElementById('greeting');
+    /* ========== 问候语 ========== */
+    const greetingEl = document.getElementById('greeting');
     if (greetingEl) {
-        var hour = new Date().getHours();
-        var greet;
+        const hour = new Date().getHours();
+        let greet;
         if (hour < 6) greet = '🌙 夜深了';
         else if (hour < 9) greet = '🌅 早上好';
         else if (hour < 12) greet = '☀️ 上午好';
@@ -571,31 +684,30 @@
         greetingEl.textContent = greet + '，要做些什么？';
     }
 
-    var clockTime = document.getElementById('clockTime');
-    var clockSeconds = document.getElementById('clockSeconds');
+    /* ========== 时钟 ========== */
+    const clockTime = document.getElementById('clockTime');
+    const clockSeconds = document.getElementById('clockSeconds');
 
     function updateClock() {
-        var now = new Date();
-        var h = String(now.getHours()).padStart(2, '0');
-        var m = String(now.getMinutes()).padStart(2, '0');
-        var s = String(now.getSeconds()).padStart(2, '0');
-        clockTime.textContent = h + ':' + m;
-        clockSeconds.textContent = s;
+        const now = new Date();
+        clockTime.textContent = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+        clockSeconds.textContent = String(now.getSeconds()).padStart(2, '0');
     }
     updateClock();
     setInterval(updateClock, 1000);
 
-    var mottoEl = document.getElementById('statusMotto');
-    var mottoText = '';
-    var mottoFrom = '';
-    var charIndex = 0;
-    var isDeleting = false;
-    var typeSpeed = 60;
-    var deleteSpeed = 25;
-    var pauseTime = 6000;
-    var isBusy = false;
+    /* ========== 一言打字机 ========== */
+    const mottoEl = document.getElementById('statusMotto');
+    let mottoText = '';
+    let mottoFrom = '';
+    let charIndex = 0;
+    let isDeleting = false;
+    const typeSpeed = 60;
+    const deleteSpeed = 25;
+    const pauseTime = 6000;
+    let isBusy = false;
 
-    var fallbacks = [
+    const fallbacks = [
         '❄️ 今天也在雪地里码代码',
         '🎮 服务器开着，来玩吗',
         '☕ 咖啡因浓度：高',
@@ -613,15 +725,15 @@
         if (isBusy) return;
         isBusy = true;
 
-        var xhr = new XMLHttpRequest();
+        const xhr = new XMLHttpRequest();
         xhr.open('GET', 'https://v1.hitokoto.cn', true);
         xhr.timeout = 4000;
 
-        xhr.onload = function() {
+        xhr.onload = () => {
             isBusy = false;
             if (xhr.status === 200) {
                 try {
-                    var data = JSON.parse(xhr.responseText);
+                    const data = JSON.parse(xhr.responseText);
                     if (data && data.hitokoto) {
                         mottoText = data.hitokoto;
                         mottoFrom = data.from ? ' ——' + data.from : '';
@@ -633,8 +745,8 @@
             useFallback();
         };
 
-        xhr.onerror = function() { isBusy = false; useFallback(); };
-        xhr.ontimeout = function() { isBusy = false; useFallback(); };
+        xhr.onerror = () => { isBusy = false; useFallback(); };
+        xhr.ontimeout = () => { isBusy = false; useFallback(); };
         xhr.send();
     }
 
@@ -652,8 +764,8 @@
     }
 
     function typeStep() {
-        var display = mottoText + mottoFrom;
-        var len = display.length;
+        const display = mottoText + mottoFrom;
+        const len = display.length;
 
         if (!isDeleting) {
             charIndex++;
@@ -670,35 +782,45 @@
             if (charIndex <= 0) {
                 mottoText = '';
                 mottoFrom = '';
-                setTimeout(function() {
-                    fetchHitokoto();
-                }, 400);
+                setTimeout(fetchHitokoto, 400);
                 return;
             }
             setTimeout(typeStep, deleteSpeed);
         }
     }
 
-    setTimeout(fetchHitokoto, 1500);
+    setTimeout(fetchHitokoto, 2000);
 
-    var uptimeEl = document.getElementById('uptime');
-    var launchTime = new Date('2026-06-01T16:33:00Z');
+    /* ========== 运行时间 ========== */
+    const uptimeEl = document.getElementById('uptime');
+    const launchTime = new Date('2026-06-01T16:33:00Z');
 
     function updateUptime() {
-        var diff = Date.now() - launchTime.getTime();
+        const diff = Date.now() - launchTime.getTime();
         if (diff < 0) {
             uptimeEl.textContent = '⏳ 即将开站...';
             return;
         }
-        var s = Math.floor(diff / 1000);
-        var d = Math.floor(s / 86400);
-        var h = Math.floor((s % 86400) / 3600);
-        var m = Math.floor((s % 3600) / 60);
-        var sec = s % 60;
+        const s = Math.floor(diff / 1000);
+        const d = Math.floor(s / 86400);
+        const h = Math.floor((s % 86400) / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const sec = s % 60;
         uptimeEl.textContent = '❄️ 已运行 ' + d + ' 天 ' + h + ' 小时 ' + m + ' 分 ' + sec + ' 秒';
     }
     updateUptime();
     setInterval(updateUptime, 1000);
+
+    /* ========== Service Worker 注册 ========== */
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').then(reg => {
+                console.log('SW registered:', reg.scope);
+            }).catch(err => {
+                console.log('SW registration failed:', err);
+            });
+        });
+    }
 })();
 </script>
 
