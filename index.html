@@ -58,18 +58,18 @@
             padding: var(--body-pad);
             font-family: var(--font-sans);
             -webkit-font-smoothing: antialiased;
-            /* ✅ 修复：图片在上，渐变在下 */
             background:
                 url('https://snowblock.top/138936740_p0.webp') center / cover no-repeat fixed,
                 linear-gradient(160deg, #cce7f5, #b3daf2, #9fccee);
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
+        /* 全屏浅色遮罩（调淡，不干扰卡片黑色层） */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
-            background: rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.08);
             pointer-events: none;
             z-index: 0;
         }
@@ -83,12 +83,10 @@
             height: 100%;
             pointer-events: none;
             z-index: 0;
-            /* 雪花开场渐入：loader 消失后才显现 */
             opacity: 0;
             transition: opacity 1.5s ease 0.5s;
         }
 
-        /* loader 隐藏后雪花渐显 */
         #loader.hidden ~ #snowCanvas {
             opacity: 1;
         }
@@ -97,7 +95,6 @@
         #loader {
             position: fixed;
             inset: 0;
-            /* 建议①：渐变背景动效 */
             background: linear-gradient(135deg, #d4eaf7, #b8d8ee, #d4eaf7);
             background-size: 200% 200%;
             animation: loaderBgShift 6s ease infinite;
@@ -107,7 +104,6 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            /* 建议②：隐藏过渡增强 */
             transition: opacity 0.5s ease, visibility 0.5s ease, transform 0.5s ease;
         }
 
@@ -152,21 +148,18 @@
             75%      { transform: translateY(4px) rotate(-2deg); }
         }
 
-        /* 外圈主线 */
         .crystal-svg .main-line {
             stroke-dasharray: 360;
             stroke-dashoffset: 360;
             animation: drawCrystal 3.5s ease-in-out infinite alternate;
         }
 
-        /* 内圈细线 */
         .crystal-svg .inner-line {
             stroke-dasharray: 240;
             stroke-dashoffset: 240;
             animation: drawCrystal 3.5s ease-in-out 0.6s infinite alternate;
         }
 
-        /* 核心小六角 */
         .crystal-svg .core-line {
             stroke-dasharray: 80;
             stroke-dashoffset: 80;
@@ -179,7 +172,6 @@
             100% { stroke-dashoffset: 0; }
         }
 
-        /* 微光闪烁 */
         .crystal-glow {
             position: absolute;
             inset: 0;
@@ -193,7 +185,6 @@
             50%      { opacity: 0.8; transform: scale(1.2); }
         }
 
-        /* 渐变色文字 */
         .loader-text-frost {
             font-family: var(--font-title);
             font-size: 1.3rem;
@@ -211,7 +202,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* 底部小点装饰 */
         .loader-dots {
             display: flex;
             gap: 6px;
@@ -248,11 +238,29 @@
             opacity: 0;
             transform: translateY(24px);
             transition: opacity 0.8s ease, transform 0.8s ease;
+            position: relative;
+        }
+
+        /* ✅ 毛玻璃下方的黑色遮罩 —— 提高文字可读性 */
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-card);
+            background: rgba(0, 0, 0, 0.25);
+            z-index: -1;
+            pointer-events: none;
         }
 
         .card.visible {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* 卡片 header 和 content 在遮罩之上 */
+        .header, .content {
+            position: relative;
+            z-index: 1;
         }
 
         .header {
@@ -480,16 +488,19 @@
             animation: fadeSlide 0.5s ease 1s forwards;
         }
 
-        /* ---------- 竖屏适配 ---------- */
+        /* ===== 竖屏适配 ===== */
         @media (orientation: portrait) and (max-width: 900px) {
             body {
                 background:
-                    url('https://snowblock.top/138936740_p0.webp') top center / auto 100% no-repeat,
+                    url('https://snowblock.top/138936740_p0.webp') center / cover no-repeat,
                     linear-gradient(160deg, #cce7f5, #b3daf2, #9fccee);
-                background-attachment: local;
+                background-attachment: scroll;
             }
             .card {
                 max-width: 92vw;
+                border-radius: 2.2rem;
+            }
+            .card::before {
                 border-radius: 2.2rem;
             }
             .header h1 {
@@ -499,6 +510,7 @@
 
         @media (max-width: 760px) {
             .card { border-radius: 2.2rem; }
+            .card::before { border-radius: 2.2rem; }
             .header { padding: 1.4rem 1.4rem 1.1rem; }
             .content { padding: 1.2rem 1.4rem; }
             .service-item { padding: 0.65rem 0.9rem; border-radius: 1.2rem; }
@@ -508,6 +520,7 @@
 
         @media (max-width: 520px) {
             .card { border-radius: 1.8rem; }
+            .card::before { border-radius: 1.8rem; }
             .header { padding: 1.1rem 1.1rem 0.9rem; }
             .header h1 { font-size: 1.3rem; }
             .header .domain { font-size: 0.65rem; }
@@ -534,6 +547,7 @@
             body::before { display: none; }
             body { padding: 1rem; }
             .card { background: #fff; backdrop-filter: none; border: 1px solid #ccc; box-shadow: none; max-width: 100%; opacity: 1; transform: none; animation: none; }
+            .card::before { display: none; }
             .header { background: #f5f5f5; }
             .header h1 { background: none; color: #0b2b3b; }
             .greeting { color: #0b2b3b; text-shadow: none; opacity: 1; animation: none; }
@@ -549,7 +563,7 @@
             #loader { display: none; }
         }
 
-        /* ========== 建议⑤：暗色模式 ========== */
+        /* ===== 暗色模式 ===== */
         @media (prefers-color-scheme: dark) {
             body {
                 background:
@@ -559,6 +573,11 @@
 
             body::before {
                 background: rgba(0,0,0,0.25);
+            }
+
+            /* 暗色下加深卡片黑色遮罩 */
+            .card::before {
+                background: rgba(0, 0, 0, 0.40);
             }
 
             #loader {
@@ -581,59 +600,26 @@
                 text-shadow: 0 2px 8px rgba(0,0,0,0.60);
             }
 
-            .service-url {
-                color: #8ab0c8;
-            }
-
-            .service-desc {
-                color: rgba(160, 190, 210, 0.70);
-            }
-
-            .status-motto {
-                color: rgba(160, 190, 210, 0.75);
-            }
-
-            .uptime {
-                color: rgba(160, 190, 210, 0.45);
-            }
-
-            .footer-note {
-                color: rgba(160, 190, 210, 0.60);
-                border-top-color: rgba(255,255,255,0.06);
-            }
-
-            .toast {
-                background: rgba(0,0,0,0.80);
-                border-color: rgba(255,255,255,0.06);
-            }
-
-            .header .domain {
-                color: rgba(140, 180, 200, 0.85);
-            }
-
-            .status-box {
-                background: rgba(255,255,255,0.04);
-                border-color: rgba(255,255,255,0.06);
-            }
-
-            .service-item {
-                background: rgba(255,255,255,0.05);
-                border-color: rgba(255,255,255,0.07);
-            }
+            .service-url { color: #8ab0c8; }
+            .service-desc { color: rgba(160, 190, 210, 0.70); }
+            .status-motto { color: rgba(160, 190, 210, 0.75); }
+            .uptime { color: rgba(160, 190, 210, 0.45); }
+            .footer-note { color: rgba(160, 190, 210, 0.60); border-top-color: rgba(255,255,255,0.06); }
+            .toast { background: rgba(0,0,0,0.80); border-color: rgba(255,255,255,0.06); }
+            .header .domain { color: rgba(140, 180, 200, 0.85); }
+            .status-box { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.06); }
+            .service-item { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.07); }
 
             @media (hover: hover) {
-                .service-item:hover {
-                    background: rgba(255,255,255,0.10);
-                }
+                .service-item:hover { background: rgba(255,255,255,0.10); }
             }
 
-            /* 竖屏适配同步暗色 */
             @media (orientation: portrait) and (max-width: 900px) {
                 body {
                     background:
-                        url('https://snowblock.top/138936740_p0.webp') top center / auto 100% no-repeat,
+                        url('https://snowblock.top/138936740_p0.webp') center / cover no-repeat,
                         linear-gradient(160deg, #0b1a24, #162b36);
-                    background-attachment: local;
+                    background-attachment: scroll;
                 }
             }
         }
@@ -650,13 +636,12 @@
 </head>
 <body>
 
-<!-- ===== 加载层（方案三优化版 + 背景动效） ===== -->
+<!-- ===== 加载层 ===== -->
 <div id="loader">
     <div class="loader-crystal">
         <div class="crystal-wrapper">
             <div class="crystal-glow"></div>
             <svg class="crystal-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <!-- 主线：六角星分支 -->
                 <path class="main-line" stroke="#8fd8ef" stroke-width="2.2" stroke-linecap="round"
                       fill="none"
                       d="M50 5 L50 95
@@ -669,8 +654,6 @@
                          M25 25 L5 50
                          M75 75 L95 50
                          M25 75 L5 50" />
-
-                <!-- 内线：次级分支 + 菱形细节 -->
                 <path class="inner-line" stroke="#c0f0ff" stroke-width="1.4" stroke-linecap="round"
                       fill="none"
                       d="M50 15 L50 85
@@ -683,8 +666,6 @@
                          M35 30 L15 50
                          M65 70 L85 50
                          M35 70 L15 50" />
-
-                <!-- 核心：小六角星 -->
                 <path class="core-line" stroke="#ffe6b0" stroke-width="1.8" stroke-linecap="round"
                       fill="none"
                       d="M50 38 L50 62
@@ -708,7 +689,7 @@
 
 <canvas id="snowCanvas" aria-hidden="true"></canvas>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="toast" id="" aria-live="polite"></div>
 
 <main class="card loading" id="mainCard">
     <header class="header">
@@ -762,26 +743,23 @@
 (function() {
     'use strict';
 
-    /* ========== 加载逻辑 ========== */
-    const loader = document.getElementById('loader');
-    const card = document.getElementById('mainCard');
-    const bgImage = 'https://snowblock.top/138936740_p0.webp';
-    let loaded = false;
-    let minTimePassed = false;
+    var loader = document.getElementById('loader');
+    var card = document.getElementById('mainCard');
+    var bgImage = 'https://snowblock.top/138936740_p0.webp';
+    var loaded = false;
+    var minTimePassed = false;
 
-    const img = new Image();
+    var img = new Image();
     img.src = bgImage;
-    img.onload = () => { loaded = true; checkShowCard(); };
-    img.onerror = () => { loaded = true; checkShowCard(); };
+    img.onload = function() { loaded = true; checkShowCard(); };
+    img.onerror = function() { loaded = true; checkShowCard(); };
 
-    // 至少显示 1.5 秒
-    setTimeout(() => {
+    setTimeout(function() {
         minTimePassed = true;
         checkShowCard();
     }, 1500);
 
-    // 超时 5 秒强制显示
-    const timeout = setTimeout(() => {
+    var timeout = setTimeout(function() {
         if (!card.classList.contains('visible')) {
             loaded = true;
             minTimePassed = true;
@@ -794,8 +772,8 @@
             clearTimeout(timeout);
             loader.classList.add('hidden');
             card.classList.remove('loading');
-            setTimeout(() => card.classList.add('visible'), 20);
-            loader.addEventListener('transitionend', () => {
+            setTimeout(function() { card.classList.add('visible'); }, 20);
+            loader.addEventListener('transitionend', function() {
                 if (loader.classList.contains('hidden')) {
                     loader.style.display = 'none';
                 }
@@ -803,11 +781,10 @@
         }
     }
 
-    /* ========== 雪花 ========== */
-    const canvas = document.getElementById('snowCanvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    let w, h;
+    var canvas = document.getElementById('snowCanvas');
+    var ctx = canvas.getContext('2d');
+    var particles = [];
+    var w, h;
 
     function resizeCanvas() {
         w = canvas.width = window.innerWidth;
@@ -816,7 +793,7 @@
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    const MAX_PARTICLES = window.innerWidth < 768 ? 30 : 60;
+    var MAX_PARTICLES = window.innerWidth < 768 ? 30 : 60;
 
     function createParticle() {
         return {
@@ -830,8 +807,8 @@
     }
 
     function initSnow() {
-        for (let i = 0; i < MAX_PARTICLES; i++) {
-            let p = createParticle();
+        for (var i = 0; i < MAX_PARTICLES; i++) {
+            var p = createParticle();
             p.y = Math.random() * h;
             particles.push(p);
         }
@@ -840,8 +817,8 @@
 
     function drawSnow() {
         ctx.clearRect(0, 0, w, h);
-        for (let i = 0; i < particles.length; i++) {
-            let p = particles[i];
+        for (var i = 0; i < particles.length; i++) {
+            var p = particles[i];
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             ctx.fillStyle = 'rgba(255, 255, 255, ' + p.alpha + ')';
@@ -859,22 +836,24 @@
     }
     drawSnow();
 
-    /* ========== Toast & 复制 ========== */
-    const toast = document.getElementById('toast');
-    let toastTimer = null;
+    var toast = document.getElementById('toast');
+    var toastTimer = null;
 
-    function showToast(msg, dur = 2000) {
+    function showToast(msg, dur) {
+        if (dur === undefined) dur = 2000;
         toast.textContent = msg;
         toast.classList.add('show');
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toast.classList.remove('show'), dur);
+        toastTimer = setTimeout(function() {
+            toast.classList.remove('show');
+        }, dur);
     }
 
     function copyText(text) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(() => {
+            navigator.clipboard.writeText(text).then(function() {
                 showToast('✅ 已复制：' + text);
-            }).catch(() => {
+            }).catch(function() {
                 fallbackCopy(text);
             });
         } else {
@@ -883,7 +862,7 @@
     }
 
     function fallbackCopy(text) {
-        const ta = document.createElement('textarea');
+        var ta = document.createElement('textarea');
         ta.value = text;
         ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0';
         document.body.appendChild(ta);
@@ -897,14 +876,14 @@
         document.body.removeChild(ta);
     }
 
-    document.querySelectorAll('[data-copy]').forEach(el => {
+    document.querySelectorAll('[data-copy]').forEach(function(el) {
         el.addEventListener('click', function(e) {
             e.stopPropagation();
-            const t = el.getAttribute('data-copy');
+            var t = el.getAttribute('data-copy');
             if (t) {
                 copyText(t);
                 el.classList.add('copied');
-                setTimeout(() => el.classList.remove('copied'), 300);
+                setTimeout(function() { el.classList.remove('copied'); }, 300);
             }
         });
         el.addEventListener('keydown', function(e) {
@@ -915,11 +894,10 @@
         });
     });
 
-    /* ========== 问候语 ========== */
-    const greetingEl = document.getElementById('greeting');
+    var greetingEl = document.getElementById('greeting');
     if (greetingEl) {
-        const hour = new Date().getHours();
-        let greet;
+        var hour = new Date().getHours();
+        var greet;
         if (hour < 6) greet = '🌙 夜深了';
         else if (hour < 9) greet = '🌅 早上好';
         else if (hour < 12) greet = '☀️ 上午好';
@@ -930,30 +908,28 @@
         greetingEl.textContent = greet + '，要做些什么？';
     }
 
-    /* ========== 时钟 ========== */
-    const clockTime = document.getElementById('clockTime');
-    const clockSeconds = document.getElementById('clockSeconds');
+    var clockTime = document.getElementById('clockTime');
+    var clockSeconds = document.getElementById('clockSeconds');
 
     function updateClock() {
-        const now = new Date();
+        var now = new Date();
         clockTime.textContent = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
         clockSeconds.textContent = String(now.getSeconds()).padStart(2, '0');
     }
     updateClock();
     setInterval(updateClock, 1000);
 
-    /* ========== 一言打字机 ========== */
-    const mottoEl = document.getElementById('statusMotto');
-    let mottoText = '';
-    let mottoFrom = '';
-    let charIndex = 0;
-    let isDeleting = false;
-    const typeSpeed = 60;
-    const deleteSpeed = 25;
-    const pauseTime = 6000;
-    let isBusy = false;
+    var mottoEl = document.getElementById('statusMotto');
+    var mottoText = '';
+    var mottoFrom = '';
+    var charIndex = 0;
+    var isDeleting = false;
+    var typeSpeed = 60;
+    var deleteSpeed = 25;
+    var pauseTime = 6000;
+    var isBusy = false;
 
-    const fallbacks = [
+    var fallbacks = [
         '❄️ 今天也在雪地里码代码',
         '🎮 服务器开着，来玩吗',
         '☕ 咖啡因浓度：高',
@@ -971,15 +947,15 @@
         if (isBusy) return;
         isBusy = true;
 
-        const xhr = new XMLHttpRequest();
+        var xhr = new XMLHttpRequest();
         xhr.open('GET', 'https://v1.hitokoto.cn', true);
         xhr.timeout = 4000;
 
-        xhr.onload = () => {
+        xhr.onload = function() {
             isBusy = false;
             if (xhr.status === 200) {
                 try {
-                    const data = JSON.parse(xhr.responseText);
+                    var data = JSON.parse(xhr.responseText);
                     if (data && data.hitokoto) {
                         mottoText = data.hitokoto;
                         mottoFrom = data.from ? ' ——' + data.from : '';
@@ -991,8 +967,8 @@
             useFallback();
         };
 
-        xhr.onerror = () => { isBusy = false; useFallback(); };
-        xhr.ontimeout = () => { isBusy = false; useFallback(); };
+        xhr.onerror = function() { isBusy = false; useFallback(); };
+        xhr.ontimeout = function() { isBusy = false; useFallback(); };
         xhr.send();
     }
 
@@ -1010,8 +986,8 @@
     }
 
     function typeStep() {
-        const display = mottoText + mottoFrom;
-        const len = display.length;
+        var display = mottoText + mottoFrom;
+        var len = display.length;
 
         if (!isDeleting) {
             charIndex++;
@@ -1037,32 +1013,30 @@
 
     setTimeout(fetchHitokoto, 2000);
 
-    /* ========== 运行时间 ========== */
-    const uptimeEl = document.getElementById('uptime');
-    const launchTime = new Date('2026-06-01T16:33:00Z');
+    var uptimeEl = document.getElementById('uptime');
+    var launchTime = new Date('2026-06-01T16:33:00Z');
 
     function updateUptime() {
-        const diff = Date.now() - launchTime.getTime();
+        var diff = Date.now() - launchTime.getTime();
         if (diff < 0) {
             uptimeEl.textContent = '⏳ 即将开站...';
             return;
         }
-        const s = Math.floor(diff / 1000);
-        const d = Math.floor(s / 86400);
-        const h = Math.floor((s % 86400) / 3600);
-        const m = Math.floor((s % 3600) / 60);
-        const sec = s % 60;
+        var s = Math.floor(diff / 1000);
+        var d = Math.floor(s / 86400);
+        var h = Math.floor((s % 86400) / 3600);
+        var m = Math.floor((s % 3600) / 60);
+        var sec = s % 60;
         uptimeEl.textContent = '❄️ 已运行 ' + d + ' 天 ' + h + ' 小时 ' + m + ' 分 ' + sec + ' 秒';
     }
     updateUptime();
     setInterval(updateUptime, 1000);
 
-    /* ========== Service Worker 注册 ========== */
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js').then(reg => {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js').then(function(reg) {
                 console.log('SW registered:', reg.scope);
-            }).catch(err => {
+            }).catch(function(err) {
                 console.log('SW registration failed:', err);
             });
         });
