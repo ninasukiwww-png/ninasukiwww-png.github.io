@@ -6,7 +6,7 @@
     <title>SnowBlock · 个人导航</title>
     <meta name="description" content="SnowBlock 个人导航页 — 博客、MC 服务器、状态监控、主机监控一站式">
     <meta name="theme-color" content="#0b2b3b">
-    <meta name="color-scheme" content="light">
+    <meta name="color-scheme" content="light dark">
     <meta property="og:title" content="SnowBlock · 个人导航">
     <meta property="og:description" content="❄️ SnowBlock 个人导航 — 博客、MC 服务器、状态监控、主机监控一站式">
     <meta property="og:type" content="website">
@@ -21,7 +21,6 @@
     <meta name="twitter:title" content="SnowBlock · 个人导航">
     <meta name="twitter:description" content="❄️ SnowBlock 个人导航 — 博客、MC 服务器、状态监控、主机监控一站式">
     <meta name="twitter:image" content="https://snowblock.top/138936740_p0.webp">
-    <!-- 缓存策略：建议浏览器缓存页面 1 天 -->
     <meta http-equiv="Cache-Control" content="max-age=86400">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❄️</text></svg>">
     <link rel="preload" href="https://snowblock.top/138936740_p0.webp" as="image">
@@ -59,10 +58,10 @@
             padding: var(--body-pad);
             font-family: var(--font-sans);
             -webkit-font-smoothing: antialiased;
-            /* 浅蓝色降级背景（图片未加载时显示） */
+            /* ✅ 修复：图片在上，渐变在下 */
             background:
-                linear-gradient(160deg, #cce7f5, #b3daf2, #9fccee),
-                url('https://snowblock.top/138936740_p0.webp') center / cover no-repeat fixed;
+                url('https://snowblock.top/138936740_p0.webp') center / cover no-repeat fixed,
+                linear-gradient(160deg, #cce7f5, #b3daf2, #9fccee);
             overflow-x: hidden;
         }
 
@@ -70,7 +69,7 @@
             content: '';
             position: fixed;
             inset: 0;
-            background: rgba(255,255,255,0.18);  /* 半透明白色遮罩，维持浅亮质感 */
+            background: rgba(255,255,255,0.18);
             pointer-events: none;
             z-index: 0;
         }
@@ -84,46 +83,155 @@
             height: 100%;
             pointer-events: none;
             z-index: 0;
+            /* 雪花开场渐入：loader 消失后才显现 */
+            opacity: 0;
+            transition: opacity 1.5s ease 0.5s;
         }
 
-        /* ---------- Loading 层 ---------- */
+        /* loader 隐藏后雪花渐显 */
+        #loader.hidden ~ #snowCanvas {
+            opacity: 1;
+        }
+
+        /* ===== 加载层 ===== */
         #loader {
             position: fixed;
             inset: 0;
-            background: rgba(180,210,235,0.95); /* 浅蓝半透明 */
+            /* 建议①：渐变背景动效 */
+            background: linear-gradient(135deg, #d4eaf7, #b8d8ee, #d4eaf7);
+            background-size: 200% 200%;
+            animation: loaderBgShift 6s ease infinite;
             backdrop-filter: blur(6px);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
+            /* 建议②：隐藏过渡增强 */
+            transition: opacity 0.5s ease, visibility 0.5s ease, transform 0.5s ease;
         }
+
+        @keyframes loaderBgShift {
+            0%   { background-position: 0% 0%; }
+            50%  { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
         #loader.hidden {
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
-        }
-        .loader-icon {
-            font-size: 3.5rem;
-            animation: float 2.5s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
-        }
-        .loader-text {
-            margin-top: 1.2rem;
-            font-family: var(--font-title);
-            color: #1e3b4a;
-            font-size: 1.4rem;
-            letter-spacing: 0.08em;
+            transform: scale(1.05);
         }
 
-        /* 卡片加载状态：先隐藏动画 */
-        .card.loading {
-            opacity: 0;
-            animation: none !important;
+        /* ===== 方案三：SVG 雪晶生长 ===== */
+        .loader-crystal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .crystal-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .crystal-svg {
+            width: 90px;
+            height: 90px;
+            animation: crystalFloat 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 12px rgba(143,216,239,0.3));
+        }
+
+        @keyframes crystalFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25%      { transform: translateY(-8px) rotate(3deg); }
+            75%      { transform: translateY(4px) rotate(-2deg); }
+        }
+
+        /* 外圈主线 */
+        .crystal-svg .main-line {
+            stroke-dasharray: 360;
+            stroke-dashoffset: 360;
+            animation: drawCrystal 3.5s ease-in-out infinite alternate;
+        }
+
+        /* 内圈细线 */
+        .crystal-svg .inner-line {
+            stroke-dasharray: 240;
+            stroke-dashoffset: 240;
+            animation: drawCrystal 3.5s ease-in-out 0.6s infinite alternate;
+        }
+
+        /* 核心小六角 */
+        .crystal-svg .core-line {
+            stroke-dasharray: 80;
+            stroke-dashoffset: 80;
+            animation: drawCrystal 2.5s ease-in-out 1.2s infinite alternate;
+        }
+
+        @keyframes drawCrystal {
+            0%   { stroke-dashoffset: 360; }
+            60%  { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        /* 微光闪烁 */
+        .crystal-glow {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(143,216,239,0.15), transparent 70%);
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50%      { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        /* 渐变色文字 */
+        .loader-text-frost {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, #8fd8ef, #c0f0ff, #ffe6b0, #8fd8ef);
+            background-size: 300% 300%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: frostShift 4s ease infinite;
+        }
+
+        @keyframes frostShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 底部小点装饰 */
+        .loader-dots {
+            display: flex;
+            gap: 6px;
+            margin-top: 0.2rem;
+        }
+
+        .loader-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #8fd8ef;
+            animation: dotBounce 1.2s ease-in-out infinite;
+        }
+
+        .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.3; }
+            50%      { transform: translateY(-8px); opacity: 1; }
         }
 
         /* ---------- 卡片主体 ---------- */
@@ -372,12 +480,12 @@
             animation: fadeSlide 0.5s ease 1s forwards;
         }
 
-        /* ---------- 16:9 竖屏适配 ---------- */
+        /* ---------- 竖屏适配 ---------- */
         @media (orientation: portrait) and (max-width: 900px) {
             body {
                 background:
-                    linear-gradient(160deg, #cce7f5, #b3daf2, #9fccee),
-                    url('https://snowblock.top/138936740_p0.webp') top center / auto 100% no-repeat;
+                    url('https://snowblock.top/138936740_p0.webp') top center / auto 100% no-repeat,
+                    linear-gradient(160deg, #cce7f5, #b3daf2, #9fccee);
                 background-attachment: local;
             }
             .card {
@@ -389,7 +497,6 @@
             }
         }
 
-        /* 原有响应式 */
         @media (max-width: 760px) {
             .card { border-radius: 2.2rem; }
             .header { padding: 1.4rem 1.4rem 1.1rem; }
@@ -441,6 +548,95 @@
             #snowCanvas { display: none; }
             #loader { display: none; }
         }
+
+        /* ========== 建议⑤：暗色模式 ========== */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background:
+                    url('https://snowblock.top/138936740_p0.webp') center / cover no-repeat fixed,
+                    linear-gradient(160deg, #0b1a24, #162b36);
+            }
+
+            body::before {
+                background: rgba(0,0,0,0.25);
+            }
+
+            #loader {
+                background: linear-gradient(135deg, #0d1f2b, #142a38, #0d1f2b);
+                background-size: 200% 200%;
+            }
+
+            .card {
+                --glass-bg: rgba(0, 18, 30, 0.55);
+                --glass-border: rgba(255,255,255,0.08);
+                --glass-hover-bg: rgba(255,255,255,0.10);
+                --glass-header-bg: rgba(0, 15, 25, 0.70);
+                --shadow-card: 0 30px 60px -16px rgba(0,0,0,0.70);
+            }
+
+            .greeting,
+            .service-name,
+            .clock {
+                color: #d0e4f0;
+                text-shadow: 0 2px 8px rgba(0,0,0,0.60);
+            }
+
+            .service-url {
+                color: #8ab0c8;
+            }
+
+            .service-desc {
+                color: rgba(160, 190, 210, 0.70);
+            }
+
+            .status-motto {
+                color: rgba(160, 190, 210, 0.75);
+            }
+
+            .uptime {
+                color: rgba(160, 190, 210, 0.45);
+            }
+
+            .footer-note {
+                color: rgba(160, 190, 210, 0.60);
+                border-top-color: rgba(255,255,255,0.06);
+            }
+
+            .toast {
+                background: rgba(0,0,0,0.80);
+                border-color: rgba(255,255,255,0.06);
+            }
+
+            .header .domain {
+                color: rgba(140, 180, 200, 0.85);
+            }
+
+            .status-box {
+                background: rgba(255,255,255,0.04);
+                border-color: rgba(255,255,255,0.06);
+            }
+
+            .service-item {
+                background: rgba(255,255,255,0.05);
+                border-color: rgba(255,255,255,0.07);
+            }
+
+            @media (hover: hover) {
+                .service-item:hover {
+                    background: rgba(255,255,255,0.10);
+                }
+            }
+
+            /* 竖屏适配同步暗色 */
+            @media (orientation: portrait) and (max-width: 900px) {
+                body {
+                    background:
+                        url('https://snowblock.top/138936740_p0.webp') top center / auto 100% no-repeat,
+                        linear-gradient(160deg, #0b1a24, #162b36);
+                    background-attachment: local;
+                }
+            }
+        }
     </style>
 
     <!-- Google Analytics -->
@@ -454,10 +650,60 @@
 </head>
 <body>
 
-<!-- 加载层 -->
+<!-- ===== 加载层（方案三优化版 + 背景动效） ===== -->
 <div id="loader">
-    <div class="loader-icon">❄️</div>
-    <div class="loader-text">正在连接雪境…</div>
+    <div class="loader-crystal">
+        <div class="crystal-wrapper">
+            <div class="crystal-glow"></div>
+            <svg class="crystal-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- 主线：六角星分支 -->
+                <path class="main-line" stroke="#8fd8ef" stroke-width="2.2" stroke-linecap="round"
+                      fill="none"
+                      d="M50 5 L50 95
+                         M50 5 L75 25 L50 50
+                         M50 5 L25 25 L50 50
+                         M50 95 L75 75 L50 50
+                         M50 95 L25 75 L50 50
+                         M50 50 L95 50
+                         M75 25 L95 50
+                         M25 25 L5 50
+                         M75 75 L95 50
+                         M25 75 L5 50" />
+
+                <!-- 内线：次级分支 + 菱形细节 -->
+                <path class="inner-line" stroke="#c0f0ff" stroke-width="1.4" stroke-linecap="round"
+                      fill="none"
+                      d="M50 15 L50 85
+                         M50 15 L65 30 L50 50
+                         M50 15 L35 30 L50 50
+                         M50 85 L65 70 L50 50
+                         M50 85 L35 70 L50 50
+                         M50 50 L85 50
+                         M65 30 L85 50
+                         M35 30 L15 50
+                         M65 70 L85 50
+                         M35 70 L15 50" />
+
+                <!-- 核心：小六角星 -->
+                <path class="core-line" stroke="#ffe6b0" stroke-width="1.8" stroke-linecap="round"
+                      fill="none"
+                      d="M50 38 L50 62
+                         M50 38 L57 44 L50 50
+                         M50 38 L43 44 L50 50
+                         M50 62 L57 56 L50 50
+                         M50 62 L43 56 L50 50
+                         M50 50 L62 50
+                         M57 44 L62 50
+                         M43 44 L38 50
+                         M57 56 L62 50
+                         M43 56 L38 50" />
+            </svg>
+        </div>
+        <div class="loader-text-frost">❄️ 正在连接雪境</div>
+        <div class="loader-dots">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
 </div>
 
 <canvas id="snowCanvas" aria-hidden="true"></canvas>
