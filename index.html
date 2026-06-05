@@ -44,12 +44,12 @@
             overflow-x: hidden;
         }
 
-        /* 全屏浅色遮罩（调淡，不干扰卡片黑色层） */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.18);
+            background: rgba(0,0,0,0.30);
+            backdrop-filter: blur(2px);
             pointer-events: none;
             z-index: 0;
         }
@@ -207,7 +207,7 @@
         @media (prefers-color-scheme: dark) {
             #loader { background: linear-gradient(135deg, #0d1f2b, #142a38, #0d1f2b); background-size: 200% 200%; }
             body { background: url(https://snowblock.top/138936740_p0.webp) center/cover fixed, linear-gradient(160deg,#0b1a24,#162b36); }
-            body::before { background: rgba(0,0,0,0.25); }
+            body::before { background: rgba(0,0,0,0.40); backdrop-filter: blur(2px); }
         }
     </style>
     <link rel="stylesheet" href="style.css">
