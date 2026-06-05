@@ -259,7 +259,6 @@
     font-family: var(--font-mono);
 }
 
-.footer-note {
     font-size: 0.7rem;
     color: rgba(200,235,250,0.70);
     text-shadow: 0 1px 4px rgba(0,0,0,0.30);
@@ -310,7 +309,6 @@
     .service-url { font-size: 0.6rem; }
     .service-desc { font-size: 0.5rem; }
     .status-box { padding: 0.6rem 0.8rem; gap: 0.3rem; }
-    .footer-note { font-size: 0.55rem; margin-top: 0.8rem; padding-top: 0.6rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -337,7 +335,6 @@
     .status-motto { color: #555; }
     .status-motto::after { content: none; }
     .uptime { color: #888; }
-    .footer-note { opacity: 1; animation: none; }
     #snowCanvas { display: none; }
     #loader { display: none; }
 }
@@ -379,7 +376,6 @@
     .service-desc { color: rgba(160, 190, 210, 0.70); }
     .status-motto { color: rgba(160, 190, 210, 0.75); }
     .uptime { color: rgba(160, 190, 210, 0.45); }
-    .footer-note { color: rgba(160, 190, 210, 0.60); border-top-color: rgba(255,255,255,0.06); }
     .toast { background: rgba(0,0,0,0.80); border-color: rgba(255,255,255,0.06); }
     .header .domain { color: rgba(140, 180, 200, 0.85); }
     .status-box { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.06); }
