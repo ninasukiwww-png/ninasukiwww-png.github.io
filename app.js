@@ -299,4 +299,27 @@
             });
         });
     }
+
+    // Dark mode toggle
+    (function() {
+        var btn = document.getElementById('themeToggle');
+        if (!btn) return;
+        var stored = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        function applyTheme(dark) {
+            if (dark) { document.documentElement.classList.add('dark'); btn.textContent = '☀️'; }
+            else { document.documentElement.classList.remove('dark'); btn.textContent = '🌙'; }
+        }
+        
+        if (stored === 'dark') applyTheme(true);
+        else if (stored === 'light') applyTheme(false);
+        else applyTheme(prefersDark);
+        
+        btn.addEventListener('click', function() {
+            var isDark = document.documentElement.classList.toggle('dark');
+            btn.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+    })();
 })();
