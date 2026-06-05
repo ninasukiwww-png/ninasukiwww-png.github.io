@@ -110,7 +110,7 @@
     function copyText(text) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(function() {
-                showToast('✅ 已复制：' + text);
+                showToast('已复制：' + text);
             }).catch(function() {
                 fallbackCopy(text);
             });
@@ -126,10 +126,10 @@
         document.body.appendChild(ta);
         ta.select();
         try {
-            if (document.execCommand('copy')) showToast('✅ 已复制：' + text);
-            else showToast('❌ 复制失败');
+            if (document.execCommand('copy')) showToast('已复制：' + text);
+            else showToast('复制失败');
         } catch(e) {
-            showToast('❌ 复制失败');
+            showToast('复制失败');
         }
         document.body.removeChild(ta);
     }
@@ -156,13 +156,13 @@
     if (greetingEl) {
         var hour = new Date().getHours();
         var greet;
-        if (hour < 6) greet = '🌙 夜深了';
-        else if (hour < 9) greet = '🌅 早上好';
-        else if (hour < 12) greet = '☀️ 上午好';
-        else if (hour < 14) greet = '🌤️ 中午好';
-        else if (hour < 18) greet = '🌇 下午好';
-        else if (hour < 21) greet = '🌆 傍晚好';
-        else greet = '🌙 晚上好';
+        if (hour < 6) greet = '夜深了';
+        else if (hour < 9) greet = '早上好';
+        else if (hour < 12) greet = '上午好';
+        else if (hour < 14) greet = '中午好';
+        else if (hour < 18) greet = '下午好';
+        else if (hour < 21) greet = '傍晚好';
+        else greet = '晚上好';
         greetingEl.textContent = greet + '，要做些什么？';
     }
 
@@ -189,16 +189,16 @@
 
     var fallbacks = [
         '❄️ 今天也在雪地里码代码',
-        '🎮 服务器开着，来玩吗',
-        '☕ 咖啡因浓度：高',
-        '🌙 夜猫子出没中',
+        '服务器开着，来玩吗',
+        '咖啡因浓度：高',
+        '夜猫子出没中',
         '🏔️ 雪山服务器运行中',
-        '✨ 保持好奇，保持愚蠢',
-        '⚡ 系统状态：摸鱼',
-        '🍵 先喝口水再干活',
-        '🌨️ 雪下了一整天',
-        '🔄 正在重启智商...',
-        '🎯 目标是：不咕'
+        '保持好奇，保持愚蠢',
+        '系统状态：摸鱼',
+        '先喝口水再干活',
+        '雪下了一整天',
+        '正在重启智商...',
+        '目标是：不咕'
     ];
 
     function fetchHitokoto() {
