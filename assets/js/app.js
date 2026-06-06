@@ -3,7 +3,7 @@
 
     var loader = document.getElementById('loader');
     var card = document.getElementById('mainCard');
-    var bgImage = 'https://cdn.jsdelivr.net/gh/ninasukiwww-png/my-images/landing/138936740_p0.webp';
+    var bgImage = 'https://raw.githubusercontent.com/ninasukiwww-png/my-images/main/landing/138936740_p0.webp';
     var loaded = false;
     var minTimePassed = false;
 
