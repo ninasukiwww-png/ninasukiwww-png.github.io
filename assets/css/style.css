@@ -274,7 +274,7 @@
 @media (orientation: portrait) and (max-width: 900px) {
     body {
         background:
-            url('https://raw.githubusercontent.com/ninasukiwww-png/my-images/main/landing/138936740_p0.webp') center / cover no-repeat,
+            url('https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/landing/138936740_p0.webp') center / cover no-repeat,
             linear-gradient(160deg, #cce7f5, #b3daf2, #9fccee);
         background-attachment: scroll;
     }
@@ -316,7 +316,7 @@
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
-    body { background: var(--color-bg-deep) url('https://raw.githubusercontent.com/ninasukiwww-png/my-images/main/landing/138936740_p0.webp') center/cover fixed; }
+    body { background: var(--color-bg-deep) url('https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/landing/138936740_p0.webp') center/cover fixed; }
     .service-item:hover { transform: none !important; }
     #snowCanvas { display: none; }
 }
@@ -343,7 +343,7 @@
 @media (prefers-color-scheme: dark) {
     body {
         background:
-            url('https://raw.githubusercontent.com/ninasukiwww-png/my-images/main/landing/138936740_p0.webp') center / cover no-repeat fixed,
+            url('https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/landing/138936740_p0.webp') center / cover no-repeat fixed,
             linear-gradient(160deg, #0b1a24, #162b36);
     }
 
@@ -388,7 +388,7 @@
     @media (orientation: portrait) and (max-width: 900px) {
         body {
             background:
-                url('https://raw.githubusercontent.com/ninasukiwww-png/my-images/main/landing/138936740_p0.webp') center / cover no-repeat,
+                url('https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/landing/138936740_p0.webp') center / cover no-repeat,
                 linear-gradient(160deg, #0b1a24, #162b36);
             background-attachment: scroll;
         }
