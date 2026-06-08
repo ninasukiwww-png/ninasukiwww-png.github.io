@@ -1,14 +1,18 @@
-(function() {
+var app = (function() {
     'use strict';
+
+    var config = {
+        cdnBase: 'https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/',
+        bgImage: 'https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/bg.webp'
+    };
 
     var loader = document.getElementById('loader');
     var card = document.getElementById('mainCard');
-    var bgImage = 'https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/landing/138936740_p0.webp';
     var loaded = false;
     var minTimePassed = false;
 
     var img = new Image();
-    img.src = bgImage;
+    img.src = config.bgImage;
     img.onload = function() { loaded = true; checkShowCard(); };
     img.onerror = function() { loaded = true; checkShowCard(); };
 
@@ -29,6 +33,7 @@
         if (loaded && minTimePassed && !card.classList.contains('visible')) {
             clearTimeout(timeout);
             loader.classList.add('hidden');
+            document.body.classList.add('bg-loaded');
             card.classList.remove('loading');
             setTimeout(function() { card.classList.add('visible'); }, 20);
             loader.addEventListener('transitionend', function() {
@@ -293,4 +298,6 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
     }
+
+    return { config: config };
 })();
