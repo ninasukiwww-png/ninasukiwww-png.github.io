@@ -27,13 +27,13 @@ body {
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     background:
-        url('https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/bg.webp') center / cover no-repeat fixed,
+        url('https://raw.githubusercontent.com/ninasukiwww-png/my-images/main/bg.webp') center / cover no-repeat fixed,
         linear-gradient(160deg, #cce7f5, #b3daf2, #9fccee);
     overflow-x: hidden;
 }
 
 body.bg-loaded {
-    background: var(--color-bg-deep) url('https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/bg.webp') center/cover fixed;
+    background: var(--color-bg-deep) url('https://raw.githubusercontent.com/ninasukiwww-png/my-images/main/bg.webp') center/cover fixed;
 }
 
 body::before {
@@ -440,7 +440,7 @@ body > * { position: relative; z-index: 1; }
 @media (orientation: portrait) and (max-width: 900px) {
     body {
         background:
-            url('https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/bg.webp') center / cover no-repeat,
+            url('https://raw.githubusercontent.com/ninasukiwww-png/my-images/main/bg.webp') center / cover no-repeat,
             linear-gradient(160deg, #cce7f5, #b3daf2, #9fccee);
         background-attachment: scroll;
     }
@@ -484,7 +484,7 @@ body > * { position: relative; z-index: 1; }
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
-    body { background: var(--color-bg-deep) url('https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/bg.webp') center/cover fixed; }
+    body { background: var(--color-bg-deep) url('https://raw.githubusercontent.com/ninasukiwww-png/my-images/main/bg.webp') center/cover fixed; }
     .service-item:hover { transform: none !important; }
     #snowCanvas { display: none; }
 }
@@ -511,7 +511,7 @@ body > * { position: relative; z-index: 1; }
 @media (prefers-color-scheme: dark) {
     body {
         background:
-            url('https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/bg.webp') center / cover no-repeat fixed,
+            url('https://raw.githubusercontent.com/ninasukiwww-png/my-images/main/bg.webp') center / cover no-repeat fixed,
             linear-gradient(160deg, #0b1a24, #162b36);
     }
 
@@ -556,7 +556,7 @@ body > * { position: relative; z-index: 1; }
     @media (orientation: portrait) and (max-width: 900px) {
         body {
             background:
-                url('https://vps.snowblock.top:9443/raw/ninasukiwww-png/my-images/main/bg.webp') center / cover no-repeat,
+                url('https://raw.githubusercontent.com/ninasukiwww-png/my-images/main/bg.webp') center / cover no-repeat,
                 linear-gradient(160deg, #0b1a24, #162b36);
             background-attachment: scroll;
         }
