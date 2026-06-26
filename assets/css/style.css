@@ -253,25 +253,6 @@
   .loader-text-frost { font-size: 1rem; }
 }
 
-/* ===== 暗色模式覆盖 ===== */
-@media (prefers-color-scheme: dark) {
-  .card {
-    --glass-bg: rgba(0, 18, 30, 0.55);
-    --glass-border: rgba(255,255,255,0.08);
-    --glass-hover-bg: rgba(255,255,255,0.10);
-    --glass-header-bg: rgba(0, 15, 25, 0.70);
-  }
-
-  .greeting,
-  .service-name,
-  .clock {
-    text-shadow: 0 2px 8px rgba(0,0,0,0.60);
-  }
-
-  .status-box { background: rgba(0,0,0,0.15); }
-  .service-item { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.07); }
-}
-
 @media print {
   body::before { display: none; }
   body { padding: 1rem; background: #fff !important; }
